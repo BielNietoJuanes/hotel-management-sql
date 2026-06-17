@@ -170,3 +170,29 @@ CREATE TABLE fact_reservations (
         FOREIGN KEY (channel_id)
         REFERENCES dim_booking_channels(channel_id)
 );
+
+# ÍNDICES
+
+/*
+Este índice acelera las consultas por fecha,
+que serán las más frecuentes en el análisis.
+*/
+
+CREATE INDEX idx_reservation_date
+ON fact_reservations(date_id);
+
+
+/*
+Índice para acelerar consultas de ingresos por hotel.
+*/
+
+CREATE INDEX idx_reservation_hotel
+ON fact_reservations(hotel_id);
+
+
+/*
+Índice para acelerar consultas por cliente.
+*/
+
+CREATE INDEX idx_reservation_customer
+ON fact_reservations(customer_id);
