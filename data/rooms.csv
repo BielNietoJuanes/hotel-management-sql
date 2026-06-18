@@ -1,0 +1,16 @@
+room_type,max_guests,price_per_night
+Single,1,80
+Single Plus,1,95
+Double,2,120
+Double Plus,2,140
+Twin,2,130
+Family,4,180
+Family Plus,5,220
+Junior Suite,2,250
+Suite,2,350
+Presidential Suite,4,600
+Deluxe,2,200
+Deluxe Sea,2,240
+Executive,2,280
+Penthouse,4,700
+Accessible,2,110
