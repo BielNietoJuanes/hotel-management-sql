@@ -196,3 +196,113 @@ ON fact_reservations(hotel_id);
 
 CREATE INDEX idx_reservation_customer
 ON fact_reservations(customer_id);
+
+-- BUSINESS VIEWS
+
+/*
+Vista 1
+
+Objetivo:
+Analizar los ingresos generados por cada hotel.
+
+Permite identificar los hoteles más rentables.
+*/
+
+DROP VIEW IF EXISTS vw_revenue_by_hotel;
+
+CREATE VIEW vw_revenue_by_hotel AS
+
+SELECT
+    h.hotel_id,
+    h.hotel_name,
+    h.city,
+    h.country,
+
+    SUM(f.total_amount) AS total_revenue,
+
+    COUNT(*) AS total_bookings
+
+FROM fact_reservations f
+
+INNER JOIN dim_hotels h
+    ON f.hotel_id = h.hotel_id
+
+GROUP BY
+    h.hotel_id,
+    h.hotel_name,
+    h.city,
+    h.country;
+
+
+
+
+/*
+Vista 2
+
+Objetivo:
+Analizar el rendimiento de cada canal de reserva.
+
+Permite conocer qué canal genera más reservas.
+*/
+
+DROP VIEW IF EXISTS vw_bookings_by_channel;
+
+CREATE VIEW vw_bookings_by_channel AS
+
+SELECT
+
+    bc.channel_id,
+    bc.channel_name,
+
+    COUNT(*) AS total_bookings,
+
+    SUM(f.total_amount) AS total_revenue
+
+FROM fact_reservations f
+
+INNER JOIN dim_booking_channels bc
+    ON f.channel_id = bc.channel_id
+
+GROUP BY
+
+    bc.channel_id,
+    bc.channel_name;
+
+-- FUNCTION
+
+/*
+Función:
+fn_avg_booking
+
+Objetivo:
+Calcular el importe medio de reserva
+para un hotel concreto.
+*/
+
+DROP FUNCTION IF EXISTS fn_avg_booking;
+
+DELIMITER $$
+
+CREATE FUNCTION fn_avg_booking
+(
+    p_hotel_id INT
+)
+
+RETURNS DECIMAL(10,2)
+
+DETERMINISTIC
+
+BEGIN
+
+    DECLARE avg_booking DECIMAL(10,2);
+
+    SELECT AVG(total_amount)
+    INTO avg_booking
+    FROM fact_reservations
+    WHERE hotel_id = p_hotel_id;
+
+    RETURN avg_booking;
+
+END $$
+
+DELIMITER ;
